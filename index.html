@@ -4,211 +4,472 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>EEST Order Booking</title>
+<meta name="color-scheme" content="dark">
 <style>
-:root {
-  --accent: #00b4ff;
-  --bg1: #000000;
-  --bg2: #121212;
-  --card: rgba(255,255,255,0.06);
-  --border: rgba(255,255,255,0.1);
-  --text: #fff;
+:root{
+  --accent:#00b4ff;
+  --bg1:#000;
+  --bg2:#0b0b0d;
+  --card: rgba(255,255,255,0.04);
+  --muted:#bfcbdc;
+  --white:#ffffff;
 }
-body {
-  margin:0;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: radial-gradient(circle at top left, var(--bg2), var(--bg1));
-  color: var(--text);
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans',sans-serif;
+  background: radial-gradient(circle at 10% 10%, #0c1116 0%, #040405 50%, #000000 100%);
+  color:var(--white);
+  -webkit-font-smoothing:antialiased;
 }
-.container {
-  max-width: 760px;
-  margin: 25px auto;
-  padding: 20px;
-}
-.card {
-  background: var(--card);
-  backdrop-filter: blur(6px);
-  padding: 18px;
-  border-radius: 14px;
-  margin-bottom: 16px;
-  border: 1px solid var(--border);
-  box-shadow: 0 0 12px rgba(0,0,0,0.4);
-}
-label {
-  display:block;
-  margin:8px 0 4px;
-  font-weight:600;
-}
-input, select, textarea {
-  width:100%;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,0.05);
-  color:#fff;
-}
-input::placeholder, textarea::placeholder {
-  color:#aaa;
-}
-.btn {
-  background:var(--accent);
-  color:#fff;
-  border:none;
-  padding:12px 18px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-  transition:0.2s;
-}
-.btn:hover {
-  background:#0090d6;
-}
-.small {
-  font-size:13px;
-  color:#cfcfcf;
-}
-.total {
-  background:rgba(255,255,255,0.07);
-  padding:10px;
-  border-radius:8px;
-  margin-top:10px;
+.container{max-width:900px;margin:18px auto;padding:18px}
+.header{text-align:center;margin-bottom:12px}
+.logo{height:72px;border-radius:8px}
+.h1{margin:6px 0;font-size:20px}
+.small{color:var(--muted);font-size:13px}
+.card{background:var(--card);padding:14px;border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.04)}
+label{display:block;margin:8px 0 6px;font-weight:600}
+.input, select, textarea {width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--white)}
+select{appearance:none}
+.row{display:flex;gap:10px}
+.col{flex:1}
+.btn{background:var(--accent);color:#00172a;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.small-muted{font-size:12px;color:var(--muted)}
+.cart-table{width:100%;border-collapse:collapse;margin-top:8px}
+.cart-table th,.cart-table td{padding:8px;border-bottom:1px dashed rgba(255,255,255,0.04);text-align:left;font-size:14px}
+.totals{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;margin-top:10px}
+.note{font-size:13px;color:var(--muted);margin-top:8px}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.badge{background:rgba(255,255,255,0.05);padding:6px 8px;border-radius:8px;font-weight:600}
+@media(max-width:700px){
+  .row{flex-direction:column}
+  .logo{height:60px}
 }
 </style>
 </head>
 <body>
 <div class="container">
-  <div style="text-align:center;margin-bottom:8px">
-    <img src="EEST_logo.png" alt="EEST" style="height:72px"/>
-    <h2 style="margin:6px 0">EEST Order Booking</h2>
-    <div class="small">Eagle Eye Studio — Talwara, Banswara</div>
+  <div class="header">
+    <img src="EEST_logo.png" alt="EEST" class="logo">
+    <div class="h1">EEST Order Booking</div>
+    <div class="small">Eagle Eye Team — Talwara, Banswara</div>
   </div>
 
+  <!-- Customer Info -->
   <div class="card">
-    <label>नाम</label><input id="name" placeholder="पूरा नाम">
-    <label>मोबाइल</label><input id="mobile" placeholder="10-digit mobile">
-    <label>Gmail</label><input id="email" placeholder="client@gmail.com">
-    <label>गाँव</label><input id="village" placeholder="गाँव/शहर का नाम">
-    <label>Google Map Link (optional)</label><input id="map" placeholder="https://maps.google.com/?q=...">
+    <label>नाम</label>
+    <input id="name" class="input" placeholder="पूरा नाम">
+    <div class="row" style="margin-top:8px">
+      <div class="col">
+        <label>मोबाइल</label>
+        <input id="mobile" class="input" placeholder="10-digit mobile">
+      </div>
+      <div class="col">
+        <label>Gmail (optional)</label>
+        <input id="email" class="input" placeholder="client@gmail.com">
+      </div>
+    </div>
+    <label style="margin-top:8px">गाँव / शहर</label>
+    <input id="village" class="input" placeholder="गाँव का नाम">
+    <label style="margin-top:8px">Google Map Link (optional)</label>
+    <input id="map" class="input" placeholder="https://maps.google.com/?q=...">
   </div>
 
+  <!-- Service selector -->
   <div class="card">
-    <label>Service</label>
-    <select id="serviceSel" onchange="renderServiceDetails()">
-      <option value="">-- चुनें --</option>
-      <option data-price="3500" data-camera="Canon 6D Mark II" value="p1">1 Day Traditional Photography — ₹3500/day</option>
-      <option data-price="3500" data-camera="Sony NX100" value="v1">1 Day Traditional Videography — ₹3500/day</option>
-    </select>
-
-    <label>Days</label><input id="days" type="number" min="1" value="1" onchange="calculate()">
-    <label>Dates & Times</label>
-    <div id="datesWrap" style="margin-top:8px"></div>
-
-    <div class="total" id="totals">
-      <div>Total: ₹<span id="total">0</span></div>
-      <div>Advance (20%): ₹<span id="advance">0</span></div>
-      <div>Per-day share (50% split): ₹<span id="perday">0</span></div>
+    <div class="flex-between">
+      <div style="font-weight:700">सेवा चुनें</div>
+      <div class="small-muted">पहले Main Category चुने — फिर sub-option चुन कर Add करें</div>
     </div>
 
-    <label>Notes (optional)</label><textarea id="notes" rows="2"></textarea>
-    <div style="margin-top:12px"><button class="btn" onclick="reviewAndSend()">Review & Send</button></div>
+    <div style="margin-top:8px" class="row">
+      <div class="col">
+        <label>Main Category</label>
+        <select id="mainCat" class="input" onchange="onMainChange()">
+          <option value="">-- चुनें --</option>
+          <option value="photography">Photography</option>
+          <option value="videography">Videography</option>
+          <option value="event">Event</option>
+          <option value="after">After Order</option>
+        </select>
+      </div>
+      <div class="col">
+        <label>Sub / Item</label>
+        <select id="subCat" class="input">
+          <option value="">-- पहले Category चुनें --</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- dynamic extra inputs (days/hours/qty) -->
+    <div id="extraInputs" style="margin-top:10px"></div>
+
+    <div style="margin-top:10px" class="row">
+      <div class="col">
+        <label>Price (₹) — यह ऑटो या मैन्युअली बदल सकते हैं</label>
+        <input id="itemPrice" class="input" type="number" placeholder="रु/इकाई" />
+      </div>
+      <div style="width:150px">
+        <label>&nbsp;</label>
+        <button class="btn" style="width:100%" onclick="addToCart()">Add to Cart</button>
+      </div>
+    </div>
+
+    <div class="note">Tip: आप multiple items add कर सकते हैं (जैसे अलग-अलग कैमरा/एल्बम/एडिटिंग)।</div>
   </div>
 
-  <div class="card small" style="text-align:center">
-    आपका डेटा 90 दिनों में हट सकता है — कृपया 90 दिनों के अंदर कलेक्ट करें।
+  <!-- Cart -->
+  <div class="card">
+    <div class="flex-between">
+      <div style="font-weight:700">Cart</div>
+      <div class="badge" id="cartCount">0 items</div>
+    </div>
+
+    <table class="cart-table" id="cartTable" style="display:none">
+      <thead>
+        <tr><th>Item</th><th>Details</th><th>Qty/Days</th><th>Price</th><th>Amount</th><th></th></tr>
+      </thead>
+      <tbody id="cartBody"></tbody>
+    </table>
+
+    <div id="emptyCart" class="small-muted" style="margin-top:8px">Cart empty — उपर से सेवाएँ जोड़ें।</div>
+
+    <div class="totals" id="summary" style="display:none">
+      <div>Total: ₹<span id="totalAmt">0</span></div>
+      <div>Advance (20%): ₹<span id="advanceAmt">0</span></div>
+      <div>Mid Payment (50%): ₹<span id="midAmt">0</span> — Per day (if days given): ₹<span id="perDayAmt">0</span></div>
+      <div>Remaining 30% (Album/Video Delivery): ₹<span id="rem30">0</span></div>
+      <div class="note">Note: 30% को album/pen drive देने पर लिया जाएगा (15% + 15%)</div>
+    </div>
+
+    <div style="margin-top:10px" class="row">
+      <div class="col">
+        <label>Notes for studio (optional)</label>
+        <textarea id="orderNotes" class="input" rows="2" placeholder="कोई विशेष निर्देश..."></textarea>
+      </div>
+      <div style="width:180px">
+        <label>&nbsp;</label>
+        <button class="btn" style="width:100%" onclick="placeOrder()">Place Order</button>
+      </div>
+    </div>
   </div>
+
+  <div class="small muted" style="text-align:center">📦 आपका डेटा 90 दिनों में हटाया जा सकता है — कृपया 90 दिनों के अंदर कलेक्ट करें।</div>
 </div>
 
 <script>
+/* CONFIG — आपके डिटेल्स */
 const CONFIG = {
   STUDIO_WHATSAPP: "9196367897528",
   STUDIO_EMAIL: "kdkalal25014@gmail.com",
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbymfn1kn94TD5OVwdxTCQteIV8hIzT0oib_PEzTaGk/dev"
 };
 
-let currentSelection = null;
+/* Sub-lists & default prices (आप बाद में बदल सकते हो) */
+const SERVICE_MAP = {
+  photography: [
+    {id:'phot_trad','label':'Traditional Photography','price':3500,'type':'day'},
+    {id:'phot_cand','label':'Candid Photography','price':4000,'type':'day'},
+    {id:'phot_out','label':'Outdoor Photography','price':4500,'type':'day'},
+    {id:'phot_baby','label':'Baby Shoot','price':2500,'type':'day'},
+    {id:'phot_couple','label':'Couple Shoot','price':3000,'type':'day'},
+    {id:'phot_maternity','label':'Maternity Shoot','price':3000,'type':'day'},
+    {id:'phot_product','label':'Product Photography','price':1200,'type':'qty'},
+    {id:'phot_model','label':'Model Portfolio Shoot','price':5000,'type':'day'},
+    {id:'phot_event','label':'Event Photography (Haldi/Mehndi/Reception)','price':5000,'type':'day'},
+    {id:'phot_family','label':'Family / Group Shoot','price':3500,'type':'day'},
+    {id:'phot_passport','label':'Passport Size Photography','price':150,'type':'qty'},
+    {id:'phot_portrait','label':'Creative Portraits','price':1800,'type':'day'},
+    {id:'phot_fashion','label':'Fashion Photography','price':6000,'type':'day'},
+    {id:'phot_corp','label':'Business / Brand Photoshoot','price':7000,'type':'day'},
+  ],
+  videography: [
+    {id:'vid_trad','label':'Traditional Videography','price':3500,'type':'day'},
+    {id:'vid_cine','label':'Cinematic Videography','price':7000,'type':'day'},
+    {id:'vid_drone','label':'Drone Videography','price':6000,'type':'day'},
+    {id:'vid_prewed','label':'Pre-Wedding Shoot','price':8000,'type':'day'},
+    {id:'vid_teaser','label':'Teaser & Trailer','price':3000,'type':'service'},
+    {id:'vid_short','label':'Short Film / Reels Shoot','price':3000,'type':'service'},
+    {id:'vid_event','label':'Event Coverage (Haldi/Mehndi/Reception)','price':5000,'type':'day'},
+    {id:'vid_music','label':'Music Video Shoot','price':9000,'type':'day'},
+    {id:'vid_corp','label':'Corporate / Advertisement Video','price':10000,'type':'day'},
+    {id:'vid_live','label':'Live Streaming Setup','price':4000,'type':'service'},
+  ],
+  event: [
+    {id:'evt_wedding','label':'Wedding Full Package','price':50000,'type':'package'},
+    {id:'evt_eng','label':'Engagement Ceremony','price':15000,'type':'package'},
+    {id:'evt_bday','label':'Birthday Event','price':8000,'type':'package'},
+    {id:'evt_ann','label':'Anniversary Celebration','price':10000,'type':'package'},
+    {id:'evt_baby','label':'Baby Shower / Naming Ceremony','price':7000,'type':'package'},
+    {id:'evt_corp','label':'Corporate Event','price':25000,'type':'package'},
+    {id:'evt_cultural','label':'Garba / Cultural Function','price':12000,'type':'package'},
+    {id:'evt_school','label':'School / Farewell Function','price':8000,'type':'package'},
+    {id:'evt_relig','label':'Religious Event','price':6000,'type':'package'}
+  ],
+  after: [
+    // After Order contains 3 sub-sections; we will populate subCat with group labels then its inner types shown in extraInputs
+    {id:'after_vmix','label':'Video Mixing / Editing','price':0,'type':'group'},
+    {id:'after_album','label':'Album Designing','price':0,'type':'group'},
+    {id:'after_cover','label':'Album Cover (Choose Design)','price':0,'type':'group'}
+  ],
+  // details for After groups:
+  after_details: {
+    vmix:[
+      {id:'vmix_hd','label':'HD Editing (per hour)','price':500,'unitLabel':'hour'},
+      {id:'vmix_fhd','label':'Full HD Editing (per hour)','price':700,'unitLabel':'hour'},
+      {id:'vmix_4k','label':'4K Editing (per hour)','price':1200,'unitLabel':'hour'},
+      {id:'vmix_drone','label':'Drone Footage Integration','price':800,'unitLabel':'service'},
+      {id:'vmix_teaser','label':'Teaser Making','price':2500,'unitLabel':'service'},
+      {id:'vmix_color','label':'Color Grading','price':1500,'unitLabel':'service'}
+    ],
+    album:[
+      {id:'alb_12x36','label':'12x36 Album','price':3500},
+      {id:'alb_12x30','label':'12x30 Album','price':3000},
+      {id:'alb_12x18','label':'12x18 Album','price':2500},
+      {id:'alb_mini','label':'Mini Album (Gift)','price':1200},
+      {id:'alb_premium','label':'Premium HD Album','price':6000}
+    ],
+    cover:[
+      {id:'cov_leather','label':'Leather Finish (AC-01)','price':1500},
+      {id:'cov_velvet','label':'Velvet Finish (AC-02)','price':1800},
+      {id:'cov_wood','label':'Wooden Frame (AC-03)','price':2200},
+      {id:'cov_metal','label':'Metallic (AC-04)','price':2600},
+      {id:'cov_acry','label':'Acrylic Front (AC-05)','price':3000},
+      {id:'cov_crystal','label':'Crystal Design (AC-06)','price':4500}
+    ]
+  }
+};
 
-function renderServiceDetails(){
-  const sel = document.getElementById('serviceSel');
-  const idx = sel.selectedIndex;
-  if(idx<=0){ currentSelection=null; calculate(); return;}
-  const option = sel.options[idx];
-  currentSelection = {
-    id: option.value,
-    price: parseInt(option.dataset.price),
-    camera: option.dataset.camera,
-    title: option.text
-  };
-  calculate();
-  renderDates();
+/* cart state */
+let CART = [];
+
+function onMainChange(){
+  const main = document.getElementById('mainCat').value;
+  const sub = document.getElementById('subCat');
+  sub.innerHTML = '';
+  document.getElementById('extraInputs').innerHTML = '';
+  if(!main){ sub.innerHTML = '<option>-- पहले Category चुनें --</option>'; return; }
+
+  let list = SERVICE_MAP[main];
+  if(!list) { sub.innerHTML = '<option>-- कोई विकल्प नहीं --</option>'; return; }
+
+  // fill sub options
+  sub.innerHTML = '<option value="">-- चुनें --</option>';
+  list.forEach(it=>{
+    const opt = document.createElement('option');
+    opt.value = it.id;
+    opt.textContent = it.label + (it.price ? ` — ₹${it.price}` : '');
+    opt.dataset.price = it.price || 0;
+    opt.dataset.type = it.type || '';
+    sub.appendChild(opt);
+  });
+
+  // if After Order selected, we want to show extra controls when a group selected
+  sub.onchange = function(){ onSubChange(main, sub.value); }
 }
 
-function renderDates(){
-  const wrap = document.getElementById('datesWrap'); wrap.innerHTML='';
-  const days = Math.max(1, parseInt(document.getElementById('days').value||1));
-  for(let i=0;i<days;i++){
-    const d = document.createElement('div');
-    d.style.marginTop='6px';
-    d.innerHTML = `Day ${i+1}: <input type="date" id="date_${i}"> <input type="time" id="time_${i}">`;
-    wrap.appendChild(d);
+function onSubChange(main, subId){
+  const extra = document.getElementById('extraInputs');
+  extra.innerHTML = '';
+  if(!subId) return;
+
+  // find selected item
+  const list = SERVICE_MAP[main];
+  const sel = list.find(x=>x.id===subId);
+  if(!sel) return;
+
+  // set default price in price field
+  document.getElementById('itemPrice').value = sel.price || 0;
+
+  // depending on type, show days/hours/qty input
+  if(sel.type==='day'){
+    extra.innerHTML = `<div class="row"><div class="col"><label>Days</label><input id="itemDays" type="number" class="input" min="1" value="1"></div><div class="col"><label>Per day time</label><input id="itemDayTime" class="input" placeholder="e.g. 9:00 AM - 2:00 PM"></div></div>`;
+  } else if(sel.type==='hour'){
+    extra.innerHTML = `<label>Hours</label><input id="itemHours" type="number" class="input" min="1" value="1">`;
+  } else if(sel.type==='qty' || sel.type==='service' || sel.type==='package' || sel.type==='group'){
+    // qty default
+    extra.innerHTML = `<label>Quantity / Units</label><input id="itemQty" type="number" class="input" min="1" value="1">`;
+  }
+
+  // special behavior for After Order groups — show inner list
+  if(main==='after' && sel.type==='group'){
+    const groupKey = subId.replace('after_',''); // vmix / album / cover
+    const inner = SERVICE_MAP.after_details[groupKey];
+    if(inner){
+      let html = '<label>Select Option</label><select id="afterInner" class="input"><option value="">-- चुनें --</option>';
+      inner.forEach(ii=>{
+        html += `<option data-price="${ii.price}" value="${ii.id}">${ii.label} ${ii.price? '— ₹'+ii.price : ''}</option>`;
+      });
+      html += '</select>';
+      extra.innerHTML += html;
+      // when inner selected, set price default
+      setTimeout(()=>{ document.getElementById('afterInner').onchange = function(){ const pp = this.selectedOptions[0].dataset.price || 0; document.getElementById('itemPrice').value = pp; }; },50);
+    }
   }
 }
 
-function calculate(){
-  if(!currentSelection){ 
-    document.getElementById('total').textContent=0;
-    document.getElementById('advance').textContent=0;
-    document.getElementById('perday').textContent=0;
+/* add to cart */
+function addToCart(){
+  const main = document.getElementById('mainCat').value;
+  const subId = document.getElementById('subCat').value;
+  if(!main || !subId){ alert('पहले Category और Sub-item चुनें'); return; }
+
+  // find item label & default price
+  let label='', basePrice=0, type='';
+  const list = SERVICE_MAP[main];
+  const item = list.find(x=>x.id===subId);
+  if(item){ label=item.label; basePrice=item.price||0; type=item.type||''; }
+
+  // if after group, get inner selection
+  let innerLabel='';
+  if(main==='after' && item && item.type==='group'){
+    const inner = document.getElementById('afterInner');
+    if(!inner || !inner.value){ alert('After Order के अंदर Option चुनें'); return; }
+    const innerKey = inner.value;
+    // find in after_details
+    const all = [].concat(SERVICE_MAP.after_details.vmix, SERVICE_MAP.after_details.album, SERVICE_MAP.after_details.cover);
+    const innerObj = all.find(a=>a.id===innerKey);
+    if(innerObj){ innerLabel = innerObj.label; basePrice = innerObj.price || 0; }
+    label = label + ' → ' + (innerLabel || '');
+  }
+
+  // qty/days/hours
+  let qty = 1;
+  if(document.getElementById('itemDays')) qty = parseInt(document.getElementById('itemDays').value||1);
+  else if(document.getElementById('itemHours')) qty = parseInt(document.getElementById('itemHours').value||1);
+  else if(document.getElementById('itemQty')) qty = parseInt(document.getElementById('itemQty').value||1);
+  else qty = 1;
+
+  // allow manual price override
+  const price = parseInt(document.getElementById('itemPrice').value||basePrice||0);
+
+  const entry = {
+    id: Date.now() + '_' + Math.floor(Math.random()*999),
+    main, subId, label, qty, price, amount: price * qty, details: {}
+  };
+  // if day-specific, save dates fields if any
+  if(document.getElementById('itemDayTime')) entry.details.dayTime = document.getElementById('itemDayTime').value || '';
+
+  CART.push(entry);
+  renderCart();
+  // reset some inputs
+  // document.getElementById('itemPrice').value = '';
+}
+
+/* render cart */
+function renderCart(){
+  const tbody = document.getElementById('cartBody');
+  tbody.innerHTML = '';
+  if(CART.length===0){
+    document.getElementById('cartTable').style.display='none';
+    document.getElementById('emptyCart').style.display='block';
+    document.getElementById('summary').style.display='none';
+    document.getElementById('cartCount').textContent = '0 items';
     return;
   }
-  const days = Math.max(1, parseInt(document.getElementById('days').value||1));
-  const total = currentSelection.price * days;
+  document.getElementById('cartTable').style.display='table';
+  document.getElementById('emptyCart').style.display='none';
+  document.getElementById('summary').style.display='block';
+  document.getElementById('cartCount').textContent = CART.length + ' items';
+
+  let total = 0, totalDays = 0;
+  CART.forEach((it, idx)=>{
+    total += it.amount;
+    // days estimation: if item label contains 'day' or qty regarded as days for day-type
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${it.label}</td><td>${it.details.dayTime||''}</td><td>${it.qty}</td><td>₹${it.price}</td><td>₹${it.amount}</td><td><button onclick="removeItem('${it.id}')" style="background:none;border:none;color:#ffb4b4;cursor:pointer">Remove</button></td>`;
+    tbody.appendChild(tr);
+  });
+
+  // totals
+  document.getElementById('totalAmt').textContent = total;
   const advance = Math.round(total * 0.20);
-  const fifty = Math.round(total * 0.50);
-  const perday = Math.round(fifty / days);
-  document.getElementById('total').textContent = total;
-  document.getElementById('advance').textContent = advance;
-  document.getElementById('perday').textContent = perday;
+  const mid = Math.round(total * 0.50);
+  // per-day: if there is at least one day-based item, split mid across total days (sum of qty for day items)
+  let totalDayUnits = 0;
+  CART.forEach(it=>{
+    // infer day-type by checking original service list
+    const mainList = SERVICE_MAP[it.main] || [];
+    const found = mainList.find(x=>x.id===it.subId);
+    if(found && found.type==='day') totalDayUnits += it.qty;
+    // for after vmix where unitLabel=hour treat as hours not days
+    if(it.main==='after' && found && found.id && found.id.startsWith('after_')) {
+      // ignore for per-day calc
+    }
+  });
+  const perDay = totalDayUnits>0 ? Math.round(mid / totalDayUnits) : Math.round(mid); // if no day-items, perDay = mid
+
+  document.getElementById('advanceAmt').textContent = advance;
+  document.getElementById('midAmt').textContent = mid;
+  document.getElementById('perDayAmt').textContent = perDay;
+  document.getElementById('rem30').textContent = Math.round(total * 0.30);
 }
 
-function reviewAndSend(){
-  const name=document.getElementById('name').value.trim(); if(!name){ alert('नाम डालें'); return;}
-  const mobile=document.getElementById('mobile').value.trim(); if(!mobile){ alert('मोबाइल डालें'); return;}
-  if(!currentSelection){ alert('Service चुनें'); return;}
-  
-  const days = Math.max(1, parseInt(document.getElementById('days').value||1));
-  const dates=[];
-  for(let i=0;i<days;i++){
-    const date = document.getElementById(`date_${i}`).value;
-    const time = document.getElementById(`time_${i}`).value;
-    if(!date || !time){ alert('सभी दिनों की तारीख और समय भरें'); return;}
-    dates.push({date,time});
-  }
+/* remove item */
+function removeItem(id){
+  CART = CART.filter(x=>x.id!==id);
+  renderCart();
+}
+
+/* Place Order -> POST to Apps Script & open WhatsApp */
+function placeOrder(){
+  if(CART.length===0){ alert('पहले Cart में कम-से-कम एक Item जोड़ें'); return; }
+  const name = document.getElementById('name').value.trim();
+  const mobile = document.getElementById('mobile').value.trim();
+  if(!name || !mobile){ alert('नाम और मोबाइल आवश्यक हैं'); return; }
+
   const payload = {
-    name, mobile, email: document.getElementById('email').value.trim(),
+    name, mobile,
+    email: document.getElementById('email').value.trim(),
     village: document.getElementById('village').value.trim(),
     map: document.getElementById('map').value.trim(),
-    notes: document.getElementById('notes').value.trim(),
-    selections: [{ id: currentSelection.id, title: currentSelection.title, camera: currentSelection.camera, price: currentSelection.price, days, dates }],
-    total: parseInt(document.getElementById('total').textContent||0),
-    advance: parseInt(document.getElementById('advance').textContent||0),
+    notes: document.getElementById('orderNotes').value.trim(),
+    selections: CART.map(it=>({
+      main: it.main, id: it.subId, label: it.label, qty: it.qty, price: it.price, amount: it.amount, details: it.details
+    })),
+    total: parseInt(document.getElementById('totalAmt').textContent || 0),
+    advance: parseInt(document.getElementById('advanceAmt').textContent || 0),
     timestamp: new Date().toISOString()
   };
 
+  // send to Apps Script
   fetch(CONFIG.APPS_SCRIPT_URL, {
-    method:'POST', mode:'cors', headers:{'Content-Type':'application/json'},
+    method:'POST',
+    mode:'cors',
+    headers:{'Content-Type':'application/json'},
     body: JSON.stringify(payload)
-  }).then(r=>r.json()).then(j=>console.log('server',j)).catch(e=>console.error(e));
-
-  let msg = `🦅 *EAGLE EYE TEAM - NEW BOOKING*\n\nName: ${payload.name}\nMobile: ${payload.mobile}\nEmail: ${payload.email||'—'}\nVillage: ${payload.village||'—'}\n\nSelected:\n`;
-  payload.selections.forEach(s=>{
-    msg += `- ${s.title} | ${s.camera} | ${s.days} day(s) | ₹${s.price} x ${s.days} = ₹${s.price*s.days}\n`;
-    s.dates.forEach((d,i)=> msg += `   Day ${i+1}: ${d.date} ${d.time}\n`);
+  }).then(res=>res.json()).then(resp=>{
+    console.log('server resp',resp);
+    // open WhatsApp with message
+    openWhatsApp(payload, resp);
+    // clear cart after placing
+    // CART = []; renderCart(); // keep cart until user confirms in whatsapp
+  }).catch(err=>{
+    console.error(err);
+    if(confirm('सर्वर पर भेजने में दिक्कत हुई। फिर भी WhatsApp भेजना चाहेंगे?')) openWhatsApp(payload, null);
   });
-  msg += `\nTotal: ₹${payload.total}\nAdvance(20%): ₹${payload.advance}\nNotes: ${payload.notes||'—'}`;
-  
-  const wa = `https://wa.me/${CONFIG.STUDIO_WHATSAPP}?text=` + encodeURIComponent(msg);
-  window.open(wa,'_blank');
-  alert('WhatsApp खोलकर Send करें — Studio को नोटिफिकेशन मिलेगा।');
 }
+
+/* build wa message & open */
+function openWhatsApp(payload, serverResp){
+  let msg = `🦅 *EAGLE EYE TEAM - NEW BOOKING*\n\n👤 *Name:* ${payload.name}\n📱 *Mobile:* ${payload.mobile}\n✉️ *Email:* ${payload.email||'—'}\n🏡 *Village:* ${payload.village||'—'}\n\n*Selections:*\n`;
+  payload.selections.forEach(s=>{
+    msg += `- ${s.label} | qty/days: ${s.qty} | ₹${s.price} each | Amount: ₹${s.amount}\n`;
+    if(s.details && s.details.dayTime) msg += `   Time: ${s.details.dayTime}\n`;
+  });
+  msg += `\n💰 *Total:* ₹${payload.total}\n💵 *Advance (20%):* ₹${payload.advance}\n\n📌 Note: आपका डेटा 90 दिनों तक रखा जाएगा।\n\n*Eagle Eye Team* — Talwara, Banswara`;
+  if(serverResp && serverResp.id) msg = `OrderID:${serverResp.id}\n` + msg;
+
+  const waUrl = `https://wa.me/${CONFIG.STUDIO_WHATSAPP}?text=` + encodeURIComponent(msg);
+  window.open(waUrl,'_blank');
+  alert('WhatsApp खुलेगा — Send दबाकर Studio को सूचित करें।');
+}
+
+/* initialize */
+(function init(){
+  document.getElementById('subCat').innerHTML = '<option>-- पहले Category चुनें --</option>';
+  renderCart();
+})();
 </script>
 </body>
 </html>
