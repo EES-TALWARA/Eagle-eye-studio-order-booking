@@ -1,94 +1,213 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>EEST Order Booking | Eagle Eye Studio</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>EEST Order Booking</title>
 <style>
-body {font-family: "Poppins", sans-serif; background:#f9f9f9; margin:0; padding:0;}
-.container {max-width:600px; margin:40px auto; background:white; padding:25px; border-radius:15px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
-h2 {text-align:center; color:#333;}
-label {font-weight:600; margin-top:10px; display:block;}
-input, select, textarea {width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid #ccc;}
-button {width:100%; padding:12px; background:#007bff; color:white; border:none; border-radius:10px; font-size:16px; cursor:pointer;}
-button:hover {background:#0056b3;}
-.total-box {background:#e9f7ef; padding:10px; margin-top:15px; border-radius:8px;}
+:root {
+  --accent: #00b4ff;
+  --bg1: #000000;
+  --bg2: #121212;
+  --card: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.1);
+  --text: #fff;
+}
+body {
+  margin:0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: radial-gradient(circle at top left, var(--bg2), var(--bg1));
+  color: var(--text);
+}
+.container {
+  max-width: 760px;
+  margin: 25px auto;
+  padding: 20px;
+}
+.card {
+  background: var(--card);
+  backdrop-filter: blur(6px);
+  padding: 18px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  box-shadow: 0 0 12px rgba(0,0,0,0.4);
+}
+label {
+  display:block;
+  margin:8px 0 4px;
+  font-weight:600;
+}
+input, select, textarea {
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.05);
+  color:#fff;
+}
+input::placeholder, textarea::placeholder {
+  color:#aaa;
+}
+.btn {
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  padding:12px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.2s;
+}
+.btn:hover {
+  background:#0090d6;
+}
+.small {
+  font-size:13px;
+  color:#cfcfcf;
+}
+.total {
+  background:rgba(255,255,255,0.07);
+  padding:10px;
+  border-radius:8px;
+  margin-top:10px;
+}
 </style>
 </head>
 <body>
 <div class="container">
-  <h2>📸 Eagle Eye Studio - Order Booking</h2>
-
-  <label>👤 नाम</label>
-  <input type="text" id="name" placeholder="अपना नाम लिखें" required>
-
-  <label>📞 मोबाइल नंबर</label>
-  <input type="tel" id="mobile" placeholder="मोबाइल नंबर" required>
-
-  <label>📧 Gmail ID</label>
-  <input type="email" id="email" placeholder="आपका Gmail ID" required>
-
-  <label>🏠 गाँव का नाम</label>
-  <input type="text" id="village" placeholder="गाँव का नाम लिखें" required>
-
-  <label>📍 पता (Google Map लिंक)</label>
-  <input type="url" id="map" placeholder="Google Map URL डालें">
-
-  <label>🎬 सर्विस चुनें</label>
-  <select id="service" onchange="updatePrice()">
-    <option value="">--सेवा चुनें--</option>
-    <option value="3500">1 Day Traditional Photography (Canon 6D Mark II) - ₹3500</option>
-    <option value="4000">1 Day Traditional Videography (Sony NX100) - ₹4000</option>
-  </select>
-
-  <label>📅 कितने दिन की सर्विस चाहिए?</label>
-  <input type="number" id="days" min="1" value="1" onchange="updatePrice()">
-
-  <label>🕒 तारीख और समय</label>
-  <input type="datetime-local" id="datetime">
-
-  <div class="total-box">
-    <p>💰 कुल राशि: ₹<span id="total">0</span></p>
-    <p>🔹 20% एडवांस: ₹<span id="advance">0</span></p>
-    <p>🔹 50% सर्विस टाइम में (4 दिन के लिए): ₹<span id="split">0</span></p>
-    <p>🔹 30% डिलीवरी टाइम पर देना होगा।</p>
+  <div style="text-align:center;margin-bottom:8px">
+    <img src="EEST_logo.png" alt="EEST" style="height:72px"/>
+    <h2 style="margin:6px 0">EEST Order Booking</h2>
+    <div class="small">Eagle Eye Studio — Talwara, Banswara</div>
   </div>
 
-  <button onclick="sendWhatsApp()">📨 ऑर्डर सबमिट करें</button>
+  <div class="card">
+    <label>नाम</label><input id="name" placeholder="पूरा नाम">
+    <label>मोबाइल</label><input id="mobile" placeholder="10-digit mobile">
+    <label>Gmail</label><input id="email" placeholder="client@gmail.com">
+    <label>गाँव</label><input id="village" placeholder="गाँव/शहर का नाम">
+    <label>Google Map Link (optional)</label><input id="map" placeholder="https://maps.google.com/?q=...">
+  </div>
+
+  <div class="card">
+    <label>Service</label>
+    <select id="serviceSel" onchange="renderServiceDetails()">
+      <option value="">-- चुनें --</option>
+      <option data-price="3500" data-camera="Canon 6D Mark II" value="p1">1 Day Traditional Photography — ₹3500/day</option>
+      <option data-price="3500" data-camera="Sony NX100" value="v1">1 Day Traditional Videography — ₹3500/day</option>
+    </select>
+
+    <label>Days</label><input id="days" type="number" min="1" value="1" onchange="calculate()">
+    <label>Dates & Times</label>
+    <div id="datesWrap" style="margin-top:8px"></div>
+
+    <div class="total" id="totals">
+      <div>Total: ₹<span id="total">0</span></div>
+      <div>Advance (20%): ₹<span id="advance">0</span></div>
+      <div>Per-day share (50% split): ₹<span id="perday">0</span></div>
+    </div>
+
+    <label>Notes (optional)</label><textarea id="notes" rows="2"></textarea>
+    <div style="margin-top:12px"><button class="btn" onclick="reviewAndSend()">Review & Send</button></div>
+  </div>
+
+  <div class="card small" style="text-align:center">
+    आपका डेटा 90 दिनों में हट सकता है — कृपया 90 दिनों के अंदर कलेक्ट करें।
+  </div>
 </div>
 
 <script>
-function updatePrice(){
-  let service = document.getElementById('service').value;
-  let days = parseInt(document.getElementById('days').value);
-  if(!service) return;
-  let total = service * days;
-  let advance = total * 0.2;
-  let remaining = total * 0.5;
-  let perDay = (remaining / days).toFixed(0);
-  document.getElementById('total').textContent = total;
-  document.getElementById('advance').textContent = advance;
-  document.getElementById('split').textContent = perDay;
+const CONFIG = {
+  STUDIO_WHATSAPP: "9196367897528",
+  STUDIO_EMAIL: "kdkalal25014@gmail.com",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbymfn1kn94TD5OVwdxTCQteIV8hIzT0oib_PEzTaGk/dev"
+};
+
+let currentSelection = null;
+
+function renderServiceDetails(){
+  const sel = document.getElementById('serviceSel');
+  const idx = sel.selectedIndex;
+  if(idx<=0){ currentSelection=null; calculate(); return;}
+  const option = sel.options[idx];
+  currentSelection = {
+    id: option.value,
+    price: parseInt(option.dataset.price),
+    camera: option.dataset.camera,
+    title: option.text
+  };
+  calculate();
+  renderDates();
 }
 
-function sendWhatsApp(){
-  let name = document.getElementById('name').value;
-  let mobile = document.getElementById('mobile').value;
-  let email = document.getElementById('email').value;
-  let village = document.getElementById('village').value;
-  let map = document.getElementById('map').value;
-  let service = document.getElementById('service');
-  let serviceText = service.options[service.selectedIndex].text;
-  let days = document.getElementById('days').value;
-  let datetime = document.getElementById('datetime').value;
-  let total = document.getElementById('total').textContent;
-  let advance = document.getElementById('advance').textContent;
-  let split = document.getElementById('split').textContent;
+function renderDates(){
+  const wrap = document.getElementById('datesWrap'); wrap.innerHTML='';
+  const days = Math.max(1, parseInt(document.getElementById('days').value||1));
+  for(let i=0;i<days;i++){
+    const d = document.createElement('div');
+    d.style.marginTop='6px';
+    d.innerHTML = `Day ${i+1}: <input type="date" id="date_${i}"> <input type="time" id="time_${i}">`;
+    wrap.appendChild(d);
+  }
+}
 
-  let msg = `🦅 *Eagle Eye Team - New Booking*\n\n👤 नाम: ${name}\n📞 मोबाइल: ${mobile}\n📧 Gmail: ${email}\n🏠 गाँव: ${village}\n📍 Map: ${map}\n🎬 सेवा: ${serviceText}\n📅 दिन: ${days}\n🕒 तारीख/समय: ${datetime}\n💰 कुल: ₹${total}\n💵 एडवांस (20%): ₹${advance}\n📆 हर दिन देना: ₹${split}\n\n📌 कृपया 90 दिन में अपना डेटा कलेक्ट करें।\nधन्यवाद 🙏\n_Eagle Eye Team_`;
+function calculate(){
+  if(!currentSelection){ 
+    document.getElementById('total').textContent=0;
+    document.getElementById('advance').textContent=0;
+    document.getElementById('perday').textContent=0;
+    return;
+  }
+  const days = Math.max(1, parseInt(document.getElementById('days').value||1));
+  const total = currentSelection.price * days;
+  const advance = Math.round(total * 0.20);
+  const fifty = Math.round(total * 0.50);
+  const perday = Math.round(fifty / days);
+  document.getElementById('total').textContent = total;
+  document.getElementById('advance').textContent = advance;
+  document.getElementById('perday').textContent = perday;
+}
 
-  let url = `https://wa.me/916367897528?text=${encodeURIComponent(msg)}`;
-  window.open(url, "_blank");
+function reviewAndSend(){
+  const name=document.getElementById('name').value.trim(); if(!name){ alert('नाम डालें'); return;}
+  const mobile=document.getElementById('mobile').value.trim(); if(!mobile){ alert('मोबाइल डालें'); return;}
+  if(!currentSelection){ alert('Service चुनें'); return;}
+  
+  const days = Math.max(1, parseInt(document.getElementById('days').value||1));
+  const dates=[];
+  for(let i=0;i<days;i++){
+    const date = document.getElementById(`date_${i}`).value;
+    const time = document.getElementById(`time_${i}`).value;
+    if(!date || !time){ alert('सभी दिनों की तारीख और समय भरें'); return;}
+    dates.push({date,time});
+  }
+  const payload = {
+    name, mobile, email: document.getElementById('email').value.trim(),
+    village: document.getElementById('village').value.trim(),
+    map: document.getElementById('map').value.trim(),
+    notes: document.getElementById('notes').value.trim(),
+    selections: [{ id: currentSelection.id, title: currentSelection.title, camera: currentSelection.camera, price: currentSelection.price, days, dates }],
+    total: parseInt(document.getElementById('total').textContent||0),
+    advance: parseInt(document.getElementById('advance').textContent||0),
+    timestamp: new Date().toISOString()
+  };
+
+  fetch(CONFIG.APPS_SCRIPT_URL, {
+    method:'POST', mode:'cors', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).then(r=>r.json()).then(j=>console.log('server',j)).catch(e=>console.error(e));
+
+  let msg = `🦅 *EAGLE EYE TEAM - NEW BOOKING*\n\nName: ${payload.name}\nMobile: ${payload.mobile}\nEmail: ${payload.email||'—'}\nVillage: ${payload.village||'—'}\n\nSelected:\n`;
+  payload.selections.forEach(s=>{
+    msg += `- ${s.title} | ${s.camera} | ${s.days} day(s) | ₹${s.price} x ${s.days} = ₹${s.price*s.days}\n`;
+    s.dates.forEach((d,i)=> msg += `   Day ${i+1}: ${d.date} ${d.time}\n`);
+  });
+  msg += `\nTotal: ₹${payload.total}\nAdvance(20%): ₹${payload.advance}\nNotes: ${payload.notes||'—'}`;
+  
+  const wa = `https://wa.me/${CONFIG.STUDIO_WHATSAPP}?text=` + encodeURIComponent(msg);
+  window.open(wa,'_blank');
+  alert('WhatsApp खोलकर Send करें — Studio को नोटिफिकेशन मिलेगा।');
 }
 </script>
 </body>
