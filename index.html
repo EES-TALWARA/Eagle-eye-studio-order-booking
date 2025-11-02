@@ -1,45 +1,95 @@
-// Paste this into Apps Script editor
-function doPost(e){
-  // Accept JSON POST
-  try{
-    const data = JSON.parse(e.postData.contents);
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName('Sheet1') || ss.getSheets()[0];
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EEST Order Booking | Eagle Eye Studio</title>
+<style>
+body {font-family: "Poppins", sans-serif; background:#f9f9f9; margin:0; padding:0;}
+.container {max-width:600px; margin:40px auto; background:white; padding:25px; border-radius:15px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
+h2 {text-align:center; color:#333;}
+label {font-weight:600; margin-top:10px; display:block;}
+input, select, textarea {width:100%; padding:8px; margin-top:5px; border-radius:8px; border:1px solid #ccc;}
+button {width:100%; padding:12px; background:#007bff; color:white; border:none; border-radius:10px; font-size:16px; cursor:pointer;}
+button:hover {background:#0056b3;}
+.total-box {background:#e9f7ef; padding:10px; margin-top:15px; border-radius:8px;}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>📸 Eagle Eye Studio - Order Booking</h2>
 
-    const ts = new Date();
-    const row = [
-      ts.toLocaleString(),
-      data.name || '',
-      data.mobile || '',
-      data.email || '',
-      JSON.stringify(data.selections || []),
-      data.total || 0,
-      data.advance || 0,
-      data.notes || ''
-    ];
-    sheet.appendRow(row);
+  <label>👤 नाम</label>
+  <input type="text" id="name" placeholder="अपना नाम लिखें" required>
 
-    // send email to studio
-    const studioEmail = 'youremail@example.com'; // <-- REPLACE with your studio email
-    const subject = `New Booking: ${data.name} | ${data.mobile}`;
-    let body = `New Booking Received\n\nName: ${data.name}\nMobile: ${data.mobile}\nEmail: ${data.email||'—'}\n\nSelections:\n`;
-    (data.selections||[]).forEach(s=>{
-      body += `- ${s.title} | ${s.camera} | ₹${s.price} x ${s.days} = ₹${s.price*s.days}\n`;
-      s.dates.forEach((d,i)=> body += `   Day ${i+1}: ${d.date} ${d.time}\n`);
-    });
-    body += `\nTotal: ₹${data.total}\nAdvance: ₹${data.advance}\nNotes: ${data.notes||'—'}\n\nTimestamp: ${ts.toString()}`;
+  <label>📞 मोबाइल नंबर</label>
+  <input type="tel" id="mobile" placeholder="मोबाइल नंबर" required>
 
-    MailApp.sendEmail(studioEmail, subject, body);
+  <label>📧 Gmail ID</label>
+  <input type="email" id="email" placeholder="आपका Gmail ID" required>
 
-    // send confirmation email to client (if provided)
-    if(data.email){
-      const csub = `Booking Confirmation — Eagle Eye Studio`;
-      const cbody = `नमस्ते ${data.name},\n\nआपका ऑर्डर प्राप्त हुआ है। नीचे विवरण है:\n\n${body}\n\nधन्यवाद,\nEagle Eye Studio`;
-      MailApp.sendEmail(data.email, csub, cbody);
-    }
+  <label>🏠 गाँव का नाम</label>
+  <input type="text" id="village" placeholder="गाँव का नाम लिखें" required>
 
-    return ContentService.createTextOutput(JSON.stringify({status:'OK'})).setMimeType(ContentService.MimeType.JSON);
-  } catch(err){
-    return ContentService.createTextOutput(JSON.stringify({status:'ERROR', message: err.message})).setMimeType(ContentService.MimeType.JSON);
-  }
+  <label>📍 पता (Google Map लिंक)</label>
+  <input type="url" id="map" placeholder="Google Map URL डालें">
+
+  <label>🎬 सर्विस चुनें</label>
+  <select id="service" onchange="updatePrice()">
+    <option value="">--सेवा चुनें--</option>
+    <option value="3500">1 Day Traditional Photography (Canon 6D Mark II) - ₹3500</option>
+    <option value="4000">1 Day Traditional Videography (Sony NX100) - ₹4000</option>
+  </select>
+
+  <label>📅 कितने दिन की सर्विस चाहिए?</label>
+  <input type="number" id="days" min="1" value="1" onchange="updatePrice()">
+
+  <label>🕒 तारीख और समय</label>
+  <input type="datetime-local" id="datetime">
+
+  <div class="total-box">
+    <p>💰 कुल राशि: ₹<span id="total">0</span></p>
+    <p>🔹 20% एडवांस: ₹<span id="advance">0</span></p>
+    <p>🔹 50% सर्विस टाइम में (4 दिन के लिए): ₹<span id="split">0</span></p>
+    <p>🔹 30% डिलीवरी टाइम पर देना होगा।</p>
+  </div>
+
+  <button onclick="sendWhatsApp()">📨 ऑर्डर सबमिट करें</button>
+</div>
+
+<script>
+function updatePrice(){
+  let service = document.getElementById('service').value;
+  let days = parseInt(document.getElementById('days').value);
+  if(!service) return;
+  let total = service * days;
+  let advance = total * 0.2;
+  let remaining = total * 0.5;
+  let perDay = (remaining / days).toFixed(0);
+  document.getElementById('total').textContent = total;
+  document.getElementById('advance').textContent = advance;
+  document.getElementById('split').textContent = perDay;
 }
+
+function sendWhatsApp(){
+  let name = document.getElementById('name').value;
+  let mobile = document.getElementById('mobile').value;
+  let email = document.getElementById('email').value;
+  let village = document.getElementById('village').value;
+  let map = document.getElementById('map').value;
+  let service = document.getElementById('service');
+  let serviceText = service.options[service.selectedIndex].text;
+  let days = document.getElementById('days').value;
+  let datetime = document.getElementById('datetime').value;
+  let total = document.getElementById('total').textContent;
+  let advance = document.getElementById('advance').textContent;
+  let split = document.getElementById('split').textContent;
+
+  let msg = `🦅 *Eagle Eye Team - New Booking*\n\n👤 नाम: ${name}\n📞 मोबाइल: ${mobile}\n📧 Gmail: ${email}\n🏠 गाँव: ${village}\n📍 Map: ${map}\n🎬 सेवा: ${serviceText}\n📅 दिन: ${days}\n🕒 तारीख/समय: ${datetime}\n💰 कुल: ₹${total}\n💵 एडवांस (20%): ₹${advance}\n📆 हर दिन देना: ₹${split}\n\n📌 कृपया 90 दिन में अपना डेटा कलेक्ट करें।\nधन्यवाद 🙏\n_Eagle Eye Team_`;
+
+  let url = `https://wa.me/916367897528?text=${encodeURIComponent(msg)}`;
+  window.open(url, "_blank");
+}
+</script>
+</body>
+</html>
