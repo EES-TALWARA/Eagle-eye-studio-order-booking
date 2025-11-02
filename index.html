@@ -1,12 +1,45 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eagle Eye Studio - Talwara</title>
-</head>
-<body>
-  <h1>Welcome to Eagle Eye Studio</h1>
-  <p>Online booking and creative photo editing by Kalpesh Kalal.</p>
-</body>
-</html>
+// Paste this into Apps Script editor
+function doPost(e){
+  // Accept JSON POST
+  try{
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName('Sheet1') || ss.getSheets()[0];
+
+    const ts = new Date();
+    const row = [
+      ts.toLocaleString(),
+      data.name || '',
+      data.mobile || '',
+      data.email || '',
+      JSON.stringify(data.selections || []),
+      data.total || 0,
+      data.advance || 0,
+      data.notes || ''
+    ];
+    sheet.appendRow(row);
+
+    // send email to studio
+    const studioEmail = 'youremail@example.com'; // <-- REPLACE with your studio email
+    const subject = `New Booking: ${data.name} | ${data.mobile}`;
+    let body = `New Booking Received\n\nName: ${data.name}\nMobile: ${data.mobile}\nEmail: ${data.email||'—'}\n\nSelections:\n`;
+    (data.selections||[]).forEach(s=>{
+      body += `- ${s.title} | ${s.camera} | ₹${s.price} x ${s.days} = ₹${s.price*s.days}\n`;
+      s.dates.forEach((d,i)=> body += `   Day ${i+1}: ${d.date} ${d.time}\n`);
+    });
+    body += `\nTotal: ₹${data.total}\nAdvance: ₹${data.advance}\nNotes: ${data.notes||'—'}\n\nTimestamp: ${ts.toString()}`;
+
+    MailApp.sendEmail(studioEmail, subject, body);
+
+    // send confirmation email to client (if provided)
+    if(data.email){
+      const csub = `Booking Confirmation — Eagle Eye Studio`;
+      const cbody = `नमस्ते ${data.name},\n\nआपका ऑर्डर प्राप्त हुआ है। नीचे विवरण है:\n\n${body}\n\nधन्यवाद,\nEagle Eye Studio`;
+      MailApp.sendEmail(data.email, csub, cbody);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({status:'OK'})).setMimeType(ContentService.MimeType.JSON);
+  } catch(err){
+    return ContentService.createTextOutput(JSON.stringify({status:'ERROR', message: err.message})).setMimeType(ContentService.MimeType.JSON);
+  }
+}
